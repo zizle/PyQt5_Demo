@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QWebEngineView加载的页面</title>
+    <script type="text/javascript" src="qwebchannel.js"></script>
+    <style>
+        .option{
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+
+        }
+        button, input{
+            display: block;
+            height: 20px;
+            margin: 10px;
+            width: calc(100% - 20px);
+            padding: 0;
+
+        }
+        button{
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div>等待界面消息...</div>
+    <div id="receive"></div>
+    <div class="option">
+        <input type="text" id="send">
+        <button onclick="clickSend()">发送</button>
+    </div>
+</body>
+<script>
+    // 网页不先消息会没有接收消息信号绑定，初始绑定接收界面消息
+    new QWebChannel(qt.webChannelTransport, function (channel) {
+        var receiveChannel = channel.objects.messageChannel;
+        // 初始化接收器(被动)
+        receiveChannel.sendMessageToJS.connect(function (message) {
+            var receivesBox = document.getElementById('receive');
+            // receivesBox.value = receivesBox.value + "来自界面消息：\n" + message + "\n";
+            var newEle = document.createElement("div");
+            newEle.innerHTML = "来自界面消息：<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + message
+            receivesBox.append(newEle)
+        })
+    });
+
+    // 点击发送消息到界面
+    function clickSend() {
+        var message = document.getElementById('send').value;
+        if (!message) {
+            return false
+        }
+        // 获取通道
+        new QWebChannel(qt.webChannelTransport, function (channel) {
+            var messageChannel = channel.objects.messageChannel;
+            // JSSendMessage为通道对象暴露的槽函数
+            messageChannel.JSSendMessage(message);
+            // 点击也要绑定接收器(因为通道被重新new和接收消息是被动的)
+            // sendMessageToJS 为界面的发射信号的槽函数
+            messageChannel.sendMessageToJS.connect(function (message) {
+                var receivesBox = document.getElementById('receive');
+                var newEle = document.createElement("div");
+                newEle.innerHTML = "来自界面消息：<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + message
+                receivesBox.append(newEle)
+            })
+        });
+    }
+
+</script>
+</html>
