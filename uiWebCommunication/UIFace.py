@@ -5,7 +5,7 @@ import os
 import sys
 import platform
 from PyQt5 import QtWidgets, QtWebEngineWidgets, QtCore, QtWebChannel
-from bag import channel
+from uiWebCommunication.bag import channel
 
 
 class Surface(QtWidgets.QWidget):
