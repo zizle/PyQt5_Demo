@@ -3,6 +3,7 @@
 
 import os
 import sys
+import platform
 from PyQt5 import QtWidgets, QtWebEngineWidgets, QtCore, QtWebChannel
 from bag import channel
 
@@ -41,7 +42,10 @@ class Surface(QtWidgets.QWidget):
         self.ui_group_box.setMinimumWidth(400)
         # 加载网页
         current_path = os.getcwd()
-        web_show.page().load(QtCore.QUrl('file:///' + current_path + '/data/web.html'))
+        if platform.system() == 'Windows':
+            web_show.page().load(QtCore.QUrl('file:///data/web.html'))
+        else:
+            web_show.page().load(QtCore.QUrl('file:///' + current_path + '/data/web.html'))
         self.setLayout(layout)
         # 设置通讯通道传输对象
         self.channel_obj = channel.JSChannel()
