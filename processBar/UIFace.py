@@ -4,10 +4,9 @@
 对于样式的改变：
 常规样式主要看主窗口Surface类的初始化内的setStyleSheet
 """
-import copy
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QTimer
-from bag import special
+from processBar.bag import special
 
 
 class Surface(QtWidgets.QWidget):

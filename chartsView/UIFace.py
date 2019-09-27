@@ -1,7 +1,7 @@
 # _*_ coding:utf-8 _*_
 # __Author__： zizle
 from PyQt5 import QtWidgets
-from bag import charts
+from chartsView.bag import charts
 
 
 class Surface(QtWidgets.QWidget):
