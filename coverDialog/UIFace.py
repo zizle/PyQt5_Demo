@@ -4,7 +4,7 @@
 弹窗遮罩效果
 """
 from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QVBoxLayout, QLineEdit, QTabWidget, QHBoxLayout
-from PyQt5.QtCore import Qt, QPropertyAnimation
+from PyQt5.QtCore import Qt
 from coverDialog.bag import sideWidget, centerWidget
 
 
@@ -48,13 +48,11 @@ class Surface(QTabWidget):
 
     def center_open(self):
         print('中心弹窗')
-        # if not hasattr(self, 'center_widget'):
-        #     self.center_widget = centerWidget.CenterDrawer(self)
-        #     self.center_widget.setWidget(DrawerWidget())
-        # self.center_widget.show()
-
         if not hasattr(self, 'center_widget'):
-            self.center_widget = centerWidget.CenterDrawer1()
+            self.center_widget = centerWidget.CenterDrawer()
+        # 计算置于窗体中心
+        self.center_widget.move(int((self.width() - self.center_widget.width()) / 2 + self.x()),
+                                int((self.height() - self.center_widget.height()) / 2 + self.y()))
         self.center_widget.animation.start()
         self.center_widget.show()
 
