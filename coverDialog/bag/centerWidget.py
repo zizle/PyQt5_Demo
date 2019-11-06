@@ -17,8 +17,8 @@ class CenterDrawer(QWidget):
         self.animation.setDuration(1000)
         # self.setText('阿斯顿发敬爱欧迪芬')
         self.resize(200, 300)
-        self.setStyleSheet('background:rgb(200,200,200)')
-        b = QPushButton(self, text='关闭', clicked=self.close)
+        self.setStyleSheet('background:rgb(247,247,247)')
+
 
 
 

@@ -3,8 +3,9 @@
 """
 弹窗遮罩效果
 """
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QVBoxLayout, QLineEdit, QTabWidget, QHBoxLayout
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QVBoxLayout, QLineEdit, QTabWidget,\
+    QHBoxLayout, QGraphicsOpacityEffect, QLabel
+from PyQt5.QtCore import Qt, QPropertyAnimation, QRect
 from coverDialog.bag import sideWidget, centerWidget
 
 
@@ -45,11 +46,25 @@ class Surface(QTabWidget):
         # 加入主窗口
         self.addTab(side_cover_widget, '四周弹出')
         self.addTab(center_cover_widget, '中心弹出')
+        # 中心弹窗遮罩体
+        opacity = QGraphicsOpacityEffect()
+        opacity.setOpacity(0.4)
+        self.cover = QWidget(self)
+        self.cover.setGraphicsEffect(opacity)
+        self.cover.setStyleSheet("background-color: rgb(150,150,150);")
+        self.cover.setAutoFillBackground(True)
+        self.cover.resize(self.width(), self.height())
+        self.cover.hide()
 
     def center_open(self):
-        print('中心弹窗')
-        if not hasattr(self, 'center_widget'):
-            self.center_widget = centerWidget.CenterDrawer()
+        self.cover.show()
+        self.center_widget = centerWidget.CenterDrawer()
+        # 关闭按钮
+        layout = QHBoxLayout(self.center_widget, margin=0)
+        layout.addWidget(
+            QPushButton(self.center_widget, text='关闭', clicked=self.center_close),
+            alignment=Qt.AlignTop | Qt.AlignRight
+        )
         # 计算置于窗体中心
         self.center_widget.move(int((self.width() - self.center_widget.width()) / 2 + self.x()),
                                 int((self.height() - self.center_widget.height()) / 2 + self.y()))
@@ -57,12 +72,23 @@ class Surface(QTabWidget):
         self.center_widget.show()
 
     def center_close(self):
-        self.animation.stop()
-        self.animation.finished.connect(self.center_widget.close)  # 动画完成则关闭窗口
-        # 透明度范围从1逐渐减少到0
-        self.animation.setStartValue(1)
-        self.animation.setEndValue(0)
-        self.animation.start()
+        self.cover.hide()
+        # 设置关闭动画
+        # 设置new widget变小的动画
+        self.anim = QPropertyAnimation(self.center_widget, b"geometry")
+        self.anim.setDuration(400)
+        self.anim.setStartValue(QRect(
+                self.center_widget.x(),
+                self.center_widget.y(),
+                self.center_widget.width(),
+                self.center_widget.height()
+            )
+        )
+        self.anim.setEndValue(QRect(self.x() + self.width(), self.y(), 0, 0))
+        self.anim.start()
+        self.center_widget.show()
+        self.anim.finished.connect(self.center_widget.deleteLater)
+        self.cover.close()
 
     def left_open(self):
         if not hasattr(self, 'left_widget'):
